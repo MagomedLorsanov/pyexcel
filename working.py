@@ -8,16 +8,20 @@ def CreateWorkbook(workbook_path):
 def CreateSheet(workbook, sheet_name):
     wb.create_sheet(sheet_name)
     return sheet_name
+
+def FillRow(char,numofchars,value):
+    cells= f'{char}{numofchars}'
+    sheet[cells].value= value
+
 ItogoSerch = 'ИТОГО:'
 kolledgeRating = {}
 kelledgeInfo = {}
 kollegePoints = []
 kolledgeSortedRating = {}
-abat = ['B','C','D','E','F','G','H','I','J','K']
+abat = ['','B','C','D','E','F','G','H','I','J','K','L','M','N']
 SortId=2
 points = {
     1:'E21',2:'E46',3:'E71',4:'E81',5:'E137',6:'E143',7:'E152'}
-
 
 for i in range(1,3):
     totalPoint = 0
@@ -54,25 +58,31 @@ for kolledge in kolledgeSortedRating:
     cellsB =f'B{SortId}'
     currentSheet[cellsA].value = kolledge
     currentSheet[cellsB].value = kolledgeSortedRating[kolledge]
-    print(cellsA,SortId)
     SortId= SortId+1
-def FillRow(char,numofchars,value):
-    cells= f'{char}{numofchars}'
-    sheet[cells].value= value
+
 
 #Creating new Sheet and Sorting data
 sheet = CreateSheet(workbook,'RazdelRating')
 sheet = wb[sheet]
 sheet['A1'].value = "Колледжи"
-j = 1
-for info in kelledgeInfo:
-    for point in info:
-        abc= abat[point]
-        val = info[point]
-        FillRow(abc,j,point)
-        FillRow(abc,j+1,val)
-    j=j+1
-sheet.auto_filter.ref = currentSheet.dimensions
+isFilter = True
+index = 2
+for keys in kelledgeInfo:
+    j = 1
+    for key in kelledgeInfo[keys]:
+        abc = abat[j]
+        val = str(kelledgeInfo[keys][key])
+        FillRow(abc,index,key)
+        if(isFilter):
+            FillRow(abc,index-1,key)
+        FillRow(abc,index,val)
+        
+        j=j+1
+        sheet.auto_filter.ref = currentSheet.dimensions
+    FillRow('A',index,keys)
+    index += 1
+    isFilter =False
+        
 
 wb.save(workbook)
 print(kolledgeSortedRating,kelledgeInfo)
